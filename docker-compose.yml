@@ -1,0 +1,16 @@
+version: '3'
+services:
+  rstudio:
+    build: .
+    platform: linux/x86_64
+    image: biobr131/r-metabolomics:latest
+    container_name: metaboanalyst
+    env_file:
+        - ./.env
+    ports:
+     - "8787:8787"
+    volumes:
+     - ./R/bioconductor_docker:/usr/local/lib/R/host-site-library
+     - ./R:/home/rstudio
+    tty: true
+    stdin_open: true
