@@ -1,4 +1,22 @@
 {
+    "bookdown::mathquill": {
+        "name": "Input LaTeX Math",
+        "package": "bookdown",
+        "title": "",
+        "description": "Input math expressions via the MathQuill library.",
+        "interactive": true,
+        "binding": "mathquill",
+        "ordinal": 2
+    },
+    "bookdown::serve_book": {
+        "name": "Preview Book",
+        "package": "bookdown",
+        "title": "",
+        "description": "Run bookdown::serve_book() to live preview a book.",
+        "interactive": true,
+        "binding": "serve_book",
+        "ordinal": 1
+    },
     "clipr::clipr_output": {
         "name": "Output to clipboard",
         "package": "clipr",
@@ -6,7 +24,7 @@
         "description": "Copies the console output of a selected expression to the system clipboard",
         "interactive": false,
         "binding": "clipr_output",
-        "ordinal": 10
+        "ordinal": 15
     },
     "clipr::clipr_result": {
         "name": "Value to clipboard",
@@ -15,7 +33,16 @@
         "description": "Copies the results of a selected expression to the system clipboard",
         "interactive": false,
         "binding": "clipr_result",
-        "ordinal": 9
+        "ordinal": 14
+    },
+    "covr::addin_report": {
+        "name": "Calculate package test coverage",
+        "package": "covr",
+        "title": "",
+        "description": "Calculates the package test coverage and opens a report, using `covr::report()`",
+        "interactive": false,
+        "binding": "addin_report",
+        "ordinal": 3
     },
     "devtools::document": {
         "name": "Document a package",
@@ -24,7 +51,7 @@
         "description": "A wrapper for `roxygen`'s `roxygen2::roxygenize()`",
         "interactive": true,
         "binding": "document",
-        "ordinal": 4
+        "ordinal": 7
     },
     "devtools::run_examples": {
         "name": "Run examples",
@@ -33,7 +60,7 @@
         "description": "Runs R code in examples using `devtools::run_examples()`",
         "interactive": true,
         "binding": "run_examples",
-        "ordinal": 5
+        "ordinal": 8
     },
     "devtools::test_active_file": {
         "name": "Run a test file",
@@ -42,7 +69,7 @@
         "description": "Run the current test file, using `devtools::test_active_file()`.",
         "interactive": true,
         "binding": "test_active_file",
-        "ordinal": 1
+        "ordinal": 4
     },
     "devtools::test_coverage": {
         "name": "Report test coverage for a package",
@@ -51,7 +78,7 @@
         "description": "Calculate and report the test coverage for the current package, using `devtools::test_coverage()`.",
         "interactive": true,
         "binding": "test_coverage",
-        "ordinal": 3
+        "ordinal": 6
     },
     "devtools::test_coverage_active_file": {
         "name": "Report test coverage for a file",
@@ -60,7 +87,25 @@
         "description": "Calculate and report test coverage for the current test file, using `devtools::test_coverage_active_file()`.",
         "interactive": true,
         "binding": "test_coverage_active_file",
-        "ordinal": 2
+        "ordinal": 5
+    },
+    "lintr::addin_lint": {
+        "name": "Lint current file",
+        "package": "lintr",
+        "title": "",
+        "description": "Runs lintr::lint on the current file",
+        "interactive": true,
+        "binding": "addin_lint",
+        "ordinal": 9
+    },
+    "lintr::addin_lint_package": {
+        "name": "Lint current package",
+        "package": "lintr",
+        "title": "",
+        "description": "Runs lintr::lint_package",
+        "interactive": true,
+        "binding": "addin_lint_package",
+        "ordinal": 10
     },
     "pkgdown::build_site_external": {
         "name": "Build pkgdown",
@@ -69,7 +114,7 @@
         "description": "Runs pkgdown on the current package",
         "interactive": true,
         "binding": "build_site_external",
-        "ordinal": 8
+        "ordinal": 13
     },
     "reprex::reprex_addin": {
         "name": "Render reprex...",
@@ -78,7 +123,7 @@
         "description": "Run `reprex::reprex()` to prepare a reproducible example for sharing.",
         "interactive": true,
         "binding": "reprex_addin",
-        "ordinal": 6
+        "ordinal": 11
     },
     "reprex::reprex_selection": {
         "name": "Reprex selection",
@@ -87,6 +132,6 @@
         "description": "Prepare reprex from current selection",
         "interactive": false,
         "binding": "reprex_selection",
-        "ordinal": 7
+        "ordinal": 12
     }
 }
