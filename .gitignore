@@ -70,3 +70,4 @@ $RECYCLE.BIN/
 .env
 R/.local/
 R/.cache/
+R/.config/
