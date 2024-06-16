@@ -15,4 +15,4 @@ RUN R -e 'BiocManager::install(c("impute", "pcaMethods", "globaltest", "GlobalAn
     R -e 'install.packages(c("devtools", "tidyverse", "iheatmapr", "googledrive", "httpuv"), dependencies=T)' && \
     R -e 'library(devtools)' && \
     R -e 'devtools::install_github("xia-lab/MetaboAnalystR", build=T, build_vignettes=T, build_manual=T)' && \
-	R -e 'devtools::install_github("xia-lab/OptiLCMS", build=T, build_vignettes=T, build_manual=T)'
+	R -e 'devtools::install_github("xia-lab/OptiLCMS", build=T, build_vignettes=F, build_manual=T)'
