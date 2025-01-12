@@ -72,3 +72,4 @@ R/.local/
 R/.cache/
 R/.config/
 R/output/
+R/bioconductor_docker
