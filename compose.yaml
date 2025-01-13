@@ -1,5 +1,6 @@
 services:
   rstudio:
+    platform: linux/x86_64
     build: .
     image: biobr131/r-metabolomics:latest
     container_name: rstudio
