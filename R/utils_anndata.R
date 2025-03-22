@@ -2,6 +2,7 @@ library(readxl)
 library(stats)
 library(ggplot2)
 library(anndata)
+library(KEGGREST)
 
 #' Create AnnData object from Excel workbook
 #'
@@ -268,4 +269,117 @@ filter_by_rsd <- function(adata, rsd_result, threshold = 30) {
   keep_metabolites <- rsd_result$metabolite[rsd_result$rsd <= threshold]
   adata_filtered <- adata[rownames(adata$X) %in% keep_metabolites, ]
   return(adata_filtered)
+}
+
+#' Calculate pathway coverage from metabolites in AnnData
+#'
+#' @param adata AnnData object
+#' @param kegg_id_col Character, column name containing KEGG compound IDs in obs
+#' @param organism Character, KEGG organism code (default: "hsa" for human)
+#' @return data.frame with pathway coverage information
+#' @import KEGGREST
+#' @export
+calculate_pathway_coverage <- function(adata,
+                                       kegg_id_col,
+                                       organism = "hsa") {
+  if (!requireNamespace("KEGGREST", quietly = TRUE)) {
+    stop("Please install KEGGREST package: BiocManager::install('KEGGREST')")
+  }
+
+  if (!.validate_anndata(adata)) {
+    stop("Invalid AnnData object")
+  }
+  if (!kegg_id_col %in% colnames(adata$obs)) {
+    stop(sprintf("Column '%s' not found in metabolite table", kegg_id_col))
+  }
+
+  measured_compounds <- unique(adata$obs[[kegg_id_col]])
+  measured_compounds <- measured_compounds[!is.na(measured_compounds)]
+
+  tryCatch({
+    pathways <- KEGGREST::keggList("pathway", organism)
+
+    results <- data.frame(
+      pathway_id = names(pathways),
+      pathway_name = unname(pathways),
+      total_compounds = NA,
+      measured_compounds = NA,
+      coverage = NA,
+      measured_ids = "",
+      stringsAsFactors = FALSE
+    )
+
+    for (i in seq_len(nrow(results))) {
+      pathway_id <- results$pathway_id[i]
+      pathway_compounds <- try({
+        pathway_info <- KEGGREST::keggGet(pathway_id)
+        compound_ids <- pathway_info[[1]]$COMPOUND
+        if (is.null(compound_ids)) return(NULL)
+        names(compound_ids)
+      }, silent = TRUE)
+
+    if (!inherits(pathway_compounds, "try-error") && !is.null(pathway_compounds)) {
+      measured_in_pathway <- measured_compounds[measured_compounds %in% pathway_compounds]
+
+        results$total_compounds[i] <- length(pathway_compounds)
+        results$measured_compounds[i] <- length(measured_in_pathway)
+        results$coverage[i] <- length(measured_in_pathway) / length(pathway_compounds) * 100
+        results$measured_ids[i] <- paste(measured_in_pathway, collapse = ";")
+      }
+    }
+
+    results <- results[!is.na(results$coverage), ]
+    results <- results[order(-results$coverage), ]
+
+    attr(results, "summary") <- list(
+      total_pathways = nrow(results),
+      mean_coverage = mean(results$coverage, na.rm = TRUE),
+      median_coverage = median(results$coverage, na.rm = TRUE),
+      measured_compounds = length(measured_compounds)
+    )
+
+    return(results)
+
+  }, error = function(e) {
+    stop("Error accessing KEGG database: ", e$message)
+  })
+}
+
+#' Print summary of pathway coverage results
+#'
+#' @param coverage_result Result from calculate_pathway_coverage
+#' @export
+print_pathway_summary <- function(coverage_result) {
+  summary <- attr(coverage_result, "summary")
+  cat("Pathway Coverage Summary:\n")
+  cat("Total pathways analyzed:", summary$total_pathways, "\n")
+  cat("Mean coverage:", round(summary$mean_coverage, 2), "%\n")
+  cat("Median coverage:", round(summary$median_coverage, 2), "%\n")
+  cat("Total measured compounds:", summary$measured_compounds, "\n")
+}
+
+#' Plot pathway coverage distribution
+#'
+#' @param coverage_result Result from calculate_pathway_coverage
+#' @param top_n Integer, number of top pathways to show (default: 20)
+#' @import ggplot2
+#' @export
+plot_pathway_coverage <- function(coverage_result, top_n = 20) {
+  top_pathways <- head(coverage_result, top_n)
+
+  top_pathways$short_name <- substr(top_pathways$pathway_name, 1, 50)
+
+  ggplot(top_pathways,
+         aes(x = reorder(short_name, coverage), y = coverage)) +
+    geom_bar(stat = "identity", fill = "lightblue") +
+    coord_flip() +
+    labs(
+      title = sprintf("Top %d Pathways by Coverage", top_n),
+      x = "Pathway",
+      y = "Coverage (%)"
+    ) +
+    theme_minimal() +
+    theme(
+      axis.text.y = element_text(size = 8)
+    )
 }
